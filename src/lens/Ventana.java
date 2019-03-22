@@ -78,8 +78,7 @@ public class Ventana extends JFrame {
         setDefaultCloseOperation(3); // 3 -> Terminar el programa al cerrar.
     }
  
-    
-
+   
   
     private void iniciarComponentes(){
     
@@ -447,7 +446,7 @@ public class Ventana extends JFrame {
     
     private void encontrarImagen(){ //modo simple (p y q tal como estan falta cuando p o q tan de otros laos)
         
-        Xtemp = 1/(2); // no guardamos ni foco ni p entonces falta corregir esto
+        Xtemp = 1/(1+1); // no guardamos ni foco ni p entonces falta corregir esto
     }
 }
 

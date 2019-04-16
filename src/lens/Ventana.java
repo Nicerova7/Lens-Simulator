@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -74,7 +75,10 @@ public class Ventana extends JFrame {
     
     private int localObjetoY;
     
+    //RGB Colors
     public static final Color PURPLE = new Color(128,0,128);
+    public static final Color GREEN = new Color(102,204,0);
+    public static final Color ORANGE = new Color(255,128,0);
   
     public Ventana(){
         // Foco amarillo debido a ... Tools -> Options -> Editor -> Initializacion
@@ -469,12 +473,12 @@ public class Ventana extends JFrame {
                    objetoPosY = Integer.parseInt(alturaObjeto.getText())*6;
                    localObjetoY = (int)objetoPosY;
                    
-                   if(nLente > 0){
+                   if(nLente > 0){ // si hay lentes referenciamos al lente y le agregamos en base al primero
                        
                        //=========== FALTA PAINT PARA IMG INVERSO ==========
                        // 250 - objetoPosY (con 250 te posicionas en el centro luego corres lo que mide el objeto y listo ubicado en linea
                        if(localObjetoY < 0){
-                        localObjetoY = -localObjetoY; // para graficar sin errores
+                        localObjetoY = -localObjetoY; // para graficar sin errores (segunda parte de bounds es el margen q contiene la imagen)
                         ObjetoInverso.setBounds(arrayLentes[0].getX()-(int)Float.parseFloat(textoObjeto.getText())*5,250, 10 ,localObjetoY);
                         ObjetoInverso.setIcon(new ImageIcon(imgObjetoInverso.getImage().getScaledInstance(10, localObjetoY, Image.SCALE_SMOOTH)));
                         topPanel.add(ObjetoInverso);
@@ -484,7 +488,7 @@ public class Ventana extends JFrame {
                        topPanel.add(Objeto);
                        }
                    }
-                   else{ 
+                   else{ // si no hay lentes agregamos en un lugar definido previamente (lentePosIni
                        if(localObjetoY < 0){
                         localObjetoY = -localObjetoY; // para graficas sin errores
                         ObjetoInverso.setBounds((int)lentePosIni-(int)Float.parseFloat(textoObjeto.getText())*5,250, 10, localObjetoY);
@@ -530,10 +534,32 @@ public class Ventana extends JFrame {
        
         if( (nLente > 0) && ((Objeto.getParent() == topPanel) || ObjetoInverso.getParent() == topPanel)){      
         Graphics2D g2 = (Graphics2D) g;
-        g2.setStroke(new BasicStroke(4));
+        /* // linea punteada usar dashed en setStroke
+        Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+        //lineas punteadas  
+        g2.setStroke(dashed);*/
+        g2.setStroke(new BasicStroke(3));
         g2.setColor(PURPLE); //localObjetoY esta en INT para poder usarlo pa graficos
-        if(objetoPosY > 0) g2.drawLine(Objeto.getX()+13, Objeto.getY()+29, arrayLentes[0].getX()+20, Objeto.getY()+29); //estaba 600, 280
+        if(objetoPosY > 0){
+            g2.drawLine(Objeto.getX()+13, Objeto.getY()+29, arrayLentes[0].getX()+20, Objeto.getY()+29);
+            g2.drawLine(arrayLentes[0].getX()+20, Objeto.getY()+29, arrayLentes[0].getX()+66 + (int)arrayFocos[0], 280);
+            // 60 para corregir los limites no buenos que da arrayLentes[0].getX();
+            g2.setColor(GREEN);
+            g2.drawLine(Objeto.getX()+13, Objeto.getY()+29,arrayLentes[0].getX()+20,280);
+           // g2.drawLine(arrayLentes[0].getX()+20,280,arrayLentes[0].getX()+20,280); falta calculo fisico
+            g2.setColor(ORANGE);
+            g2.drawLine(Objeto.getX()+13, Objeto.getY()+29, arrayLentes[0].getX()-27 - (int)arrayFocos[0] ,280);
+            //-28 para corregir el limite no bueno que da arrayLentes[0].getX()
+           // g2.drawLine(arrayLentes[0].getX()-27 - (int)arrayFocos[0] , 280, arrayLentes[0].getX()+20 ,280+Objeto.getY()+29);falta calculo geometrico
+            
+        }
+         //estaba 600, 280
         else g2.drawLine(ObjetoInverso.getX()+13, ObjetoInverso.getY()+29+localObjetoY, arrayLentes[0].getX()+20, ObjetoInverso.getY()+29+localObjetoY);
+        /* // otra linea para usar
+        g2.setStroke(new BasicStroke(3));
+        g2.setColor(BLUE);
+        g2.drawLine(0, 0, 255, 500);
+        */
         encontrarImagen();
        // g2.drawLine(arrayLentes[0].getX()+20, Objeto.getY()+48,arrayLentes[0].getX()+(int)Xtemp*7,355); //  7 regular imagen
         }

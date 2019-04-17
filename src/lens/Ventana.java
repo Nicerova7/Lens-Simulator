@@ -124,7 +124,13 @@ public class Ventana extends JFrame {
         //topPanel.add(Objeto);
         
         imagen = new JLabel(new ImageIcon("imagen.jpg"));
-        imagen.setBounds(550,140,25,142);
+        imagen.setBounds(550,250,25,80); //COMENZAR AQUI:
+        //FALTA PONER ESTO CUANDO RECIEN EXISTA UN OBJETO Y UN ESPEJO (DEBE ESTAR POR
+        //DONDE SE AGREGA LA IMAGEN AL PANEL, LUEGO IGUAL Q OBJETO Y OBJETO INVERSO
+        // ESCALAR EL TAMAÑO EN BASE A LA ECUACION DEL FABRICANTTE CUIDADO QUE ESTE ANTES DE LOS CALCULOS
+        // Y Q LOS PARAMETROS SEAN GLOBALES 
+        // AGREGAR IMAGEN E IMAGEN INVERSA CORRECTA ARREGLAR EN PHOTOSHOP
+        // PARA GENERALIZAR EN PAINT(GRAPHICS G) PODEMOS HACER FUNCIONES PARA GENERALIZAR LOS ESPEJOS
     
         
         //AQUII
@@ -483,7 +489,7 @@ public class Ventana extends JFrame {
                         ObjetoInverso.setIcon(new ImageIcon(imgObjetoInverso.getImage().getScaledInstance(10, localObjetoY, Image.SCALE_SMOOTH)));
                         topPanel.add(ObjetoInverso);
                        }else{
-                       Objeto.setBounds(arrayLentes[0].getX()-(int)Float.parseFloat(textoObjeto.getText())*5,250-localObjetoY, 10 ,localObjetoY);
+                       Objeto.setBounds(arrayLentes[0].getX()+7-(int)Float.parseFloat(textoObjeto.getText())*5,250-localObjetoY, 10 ,localObjetoY);
                        Objeto.setIcon(new ImageIcon(imgObjeto.getImage().getScaledInstance(10, localObjetoY, Image.SCALE_SMOOTH)));
                        topPanel.add(Objeto);
                        }
@@ -491,7 +497,7 @@ public class Ventana extends JFrame {
                    else{ // si no hay lentes agregamos en un lugar definido previamente (lentePosIni
                        if(localObjetoY < 0){
                         localObjetoY = -localObjetoY; // para graficas sin errores
-                        ObjetoInverso.setBounds((int)lentePosIni-(int)Float.parseFloat(textoObjeto.getText())*5,250, 10, localObjetoY);
+                        ObjetoInverso.setBounds((int)lentePosIni+7-(int)Float.parseFloat(textoObjeto.getText())*5,250, 10, localObjetoY);
                         ObjetoInverso.setIcon(new ImageIcon(imgObjetoInverso.getImage().getScaledInstance(10, localObjetoY, Image.SCALE_SMOOTH)));
                         topPanel.add(ObjetoInverso);
                        }else{
@@ -526,12 +532,15 @@ public class Ventana extends JFrame {
     }
     
     public void paint(Graphics g){
+        
+        int A,O,F,Y,P; // Para calcular geometricamente rayo del foco al lente 
+                    // O*B/A = Y -> siendo Y la posicion en el eje y del lente donde cae el rayo.
         super.paint(g);  //para superponer y no generar conflicto con JButton
    //    g.drawLine(0, getHeight()/2-30, getWidth(), getHeight()/2-30); // seguimiento con ventana
         g.setColor(Color.black);
         g.drawLine(0, 280, getWidth(), 280); 
         
-       
+             
         if( (nLente > 0) && ((Objeto.getParent() == topPanel) || ObjetoInverso.getParent() == topPanel)){      
         Graphics2D g2 = (Graphics2D) g;
         /* // linea punteada usar dashed en setStroke
@@ -540,18 +549,29 @@ public class Ventana extends JFrame {
         g2.setStroke(dashed);*/
         g2.setStroke(new BasicStroke(3));
         g2.setColor(PURPLE); //localObjetoY esta en INT para poder usarlo pa graficos
-        if(objetoPosY > 0){
-            g2.drawLine(Objeto.getX()+13, Objeto.getY()+29, arrayLentes[0].getX()+20, Objeto.getY()+29);
-            g2.drawLine(arrayLentes[0].getX()+20, Objeto.getY()+29, arrayLentes[0].getX()+66 + (int)arrayFocos[0], 280);
+        if(objetoPosY > 0){ //la multiplicacion x 5 es para darle buena distancia visualmente 
+            g2.drawLine(Objeto.getX()+13, Objeto.getY()+30, arrayLentes[0].getX()+20, Objeto.getY()+30);
+            g2.drawLine(arrayLentes[0].getX()+20, Objeto.getY()+30, arrayLentes[0].getX()+20 +(int)arrayFocos[0]*5, 280);
             // 60 para corregir los limites no buenos que da arrayLentes[0].getX();
-            g2.setColor(GREEN);
-            g2.drawLine(Objeto.getX()+13, Objeto.getY()+29,arrayLentes[0].getX()+20,280);
-           // g2.drawLine(arrayLentes[0].getX()+20,280,arrayLentes[0].getX()+20,280); falta calculo fisico
-            g2.setColor(ORANGE);
-            g2.drawLine(Objeto.getX()+13, Objeto.getY()+29, arrayLentes[0].getX()-27 - (int)arrayFocos[0] ,280);
-            //-28 para corregir el limite no bueno que da arrayLentes[0].getX()
-           // g2.drawLine(arrayLentes[0].getX()-27 - (int)arrayFocos[0] , 280, arrayLentes[0].getX()+20 ,280+Objeto.getY()+29);falta calculo geometrico
+             // se encuentra p (imagen en X)
+           //calculo:
+            A = (arrayLentes[0].getX()+20 - (int)arrayFocos[0]*5) - (Objeto.getX()+13); //A
+            F = (int)arrayFocos[0]*5; //F oco
+            O = 250-Objeto.getY(); // O bjeto altura
+            Y = O*F/A;
+            P = arrayLentes[0].getX()+20-(Objeto.getX()+13);
+            encontrarImagen(F,P); // Xtemp listo para usar
+            g2.drawLine(arrayLentes[0].getX()+20 +(int)arrayFocos[0]*5, 280, arrayLentes[0].getX()+20+(int)Xtemp, 280+Y );
             
+            g2.setColor(GREEN);
+            g2.drawLine(Objeto.getX()+13, Objeto.getY()+31,arrayLentes[0].getX()+20,280);
+            g2.drawLine(arrayLentes[0].getX()+20,280,arrayLentes[0].getX()+20+(int)Xtemp, 280+Y );
+            
+            g2.setColor(ORANGE);
+            g2.drawLine(Objeto.getX()+13, Objeto.getY()+31, arrayLentes[0].getX()+20 - (int)arrayFocos[0]*5 ,280);
+            //-28 para corregir el limite no bueno que da arrayLentes[0].getX()             
+            g2.drawLine(arrayLentes[0].getX()+20 - (int)arrayFocos[0]*5  , 280,  arrayLentes[0].getX()+20 ,280+Y);             
+            g2.drawLine( arrayLentes[0].getX()+20 ,280+Y,arrayLentes[0].getX()+20+(int)Xtemp, 280+Y );
         }
          //estaba 600, 280
         else g2.drawLine(ObjetoInverso.getX()+13, ObjetoInverso.getY()+29+localObjetoY, arrayLentes[0].getX()+20, ObjetoInverso.getY()+29+localObjetoY);
@@ -560,17 +580,15 @@ public class Ventana extends JFrame {
         g2.setColor(BLUE);
         g2.drawLine(0, 0, 255, 500);
         */
-        encontrarImagen();
+       
        // g2.drawLine(arrayLentes[0].getX()+20, Objeto.getY()+48,arrayLentes[0].getX()+(int)Xtemp*7,355); //  7 regular imagen
         }
          
     }
 
-    private void encontrarImagen(){ //modo simple (p y q tal como estan falta cuando p o q tan de otros laos)
+    private void encontrarImagen(int foco,int pp){ //modo simple (p y q tal como estan falta cuando p o q tan de otros laos)?
         
-        Xtemp = 1/(1/arrayFocos[0]-1/(objetoPosX/5)); // 5 que le dimos para graficar
-                                                    //no guardamos ni foco ni p entonces falta corregir esto
-        
+        Xtemp = 1/(1/(float)foco-1/(float)pp); 
     }
 }
 

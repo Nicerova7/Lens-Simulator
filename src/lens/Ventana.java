@@ -45,6 +45,7 @@ public class Ventana extends JFrame {
     
     private JLabel Objeto;
     private JLabel ObjetoInverso;
+    private JLabel ImagenInverso;
     private JLabel lented;
     private JLabel lentec;
     private JLabel imagen;
@@ -52,6 +53,7 @@ public class Ventana extends JFrame {
     
     private ImageIcon imgObjeto;
     private ImageIcon imgObjetoInverso;
+    private ImageIcon imgImagenInverso;
     
     private int nLente = 0;  // indica cuantos lentes hay. (n-1 seria la posicion)
     private int lentei = 0;
@@ -74,6 +76,8 @@ public class Ventana extends JFrame {
     private float Ytemp = 0;
     
     private int localObjetoY;
+    
+    int A,O,F,Y,P; //para la ecuacion de fabricante
     
     //RGB Colors
     public static final Color PURPLE = new Color(128,0,128);
@@ -123,13 +127,16 @@ public class Ventana extends JFrame {
        // Objeto = new JLabel(new ImageIcon("objeto.png"));
         //topPanel.add(Objeto);
         
-        imagen = new JLabel(new ImageIcon("imagen.jpg"));
-        imagen.setBounds(550,250,25,80); //COMENZAR AQUI:
+       // imagen = new JLabel(new ImageIcon("imagen.png"));
+        imgImagenInverso = new ImageIcon("imagenInverso.png");
+        ImagenInverso = new JLabel();
+         //COMENZAR AQUI:
+         // ESCALAR EL TAMAÑO EN BASE A LA ECUACION DEL FABRICANTTE CUIDADO QUE ESTE ANTES DE LOS CALCULOS
+         // DEFINIR CUANDO SE HARAN ESOS CALCULOS : PRIMERO CALCULO LUEGO PONGO OBJETO LUEGO PINTO RAYOS
         //FALTA PONER ESTO CUANDO RECIEN EXISTA UN OBJETO Y UN ESPEJO (DEBE ESTAR POR
         //DONDE SE AGREGA LA IMAGEN AL PANEL, LUEGO IGUAL Q OBJETO Y OBJETO INVERSO
-        // ESCALAR EL TAMAÑO EN BASE A LA ECUACION DEL FABRICANTTE CUIDADO QUE ESTE ANTES DE LOS CALCULOS
+        
         // Y Q LOS PARAMETROS SEAN GLOBALES 
-        // AGREGAR IMAGEN E IMAGEN INVERSA CORRECTA ARREGLAR EN PHOTOSHOP
         // PARA GENERALIZAR EN PAINT(GRAPHICS G) PODEMOS HACER FUNCIONES PARA GENERALIZAR LOS ESPEJOS
     
         
@@ -150,7 +157,7 @@ public class Ventana extends JFrame {
             public void actionPerformed(ActionEvent event) {
                 topPanel.remove(Objeto);        // no problem si no existe no aplica
                 topPanel.remove(ObjetoInverso); // no problem si noexiste no aplica
-                topPanel.remove(imagen);
+                topPanel.remove(ImagenInverso);
                 addObject.setEnabled(true); 
                
                 topPanel.revalidate();  
@@ -331,7 +338,7 @@ public class Ventana extends JFrame {
                 
                 if(nLente == 0){
                     textoDisLente.setEnabled(false);
-                    topPanel.remove(imagen);
+                    topPanel.remove(ImagenInverso);
                     lentePosDx = 0;
                     posAcumuladoX = lentePosIni;
                 }else {
@@ -410,12 +417,16 @@ public class Ventana extends JFrame {
                     
                     
                     arrayFocos[nLente] = Float.parseFloat(textoFoco.getText());
-                    if( Float.parseFloat(textoFoco.getText()) < 0 ){
+                    if( Float.parseFloat(textoFoco.getText()) < 0 ){ //caso lente divergente
                         arrayLentes[nLente] = new JLabel(new ImageIcon("lented.jpg"));
                         arrayLentes[nLente].addMouseListener(oyenteMouseLente);
                         
                        if( Objeto.getParent() == topPanel ){
-                           topPanel.add(imagen);
+                         //  imagen.setBounds(550,250,25,80);
+                           ecuacionFabricante();
+                           ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
+                           ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
+                           topPanel.add(ImagenInverso);
                        }
                        if( textoDisLente.isEnabled() == true ){ // si ya hay uno se puede capturar distancia 
                            lentePosDx = Integer.parseInt(textoDisLente.getText());                        
@@ -429,12 +440,16 @@ public class Ventana extends JFrame {
                        topPanel.revalidate();
                        repaint();
                        
-                    }else{
+                    }else{ //caso lente convergente
                         arrayLentes[nLente] = new JLabel(new ImageIcon("lentec.jpg"));
                         arrayLentes[nLente].addMouseListener(oyenteMouseLente);
                         
                        if( Objeto.getParent() == topPanel ){
-                           topPanel.add(imagen);
+                           ecuacionFabricante();
+                           System.out.println("ok");
+                           ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
+                           ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
+                           topPanel.add(ImagenInverso);
                        }
                        if( textoDisLente.isEnabled() == true ){
                            lentePosDx = Integer.parseInt(textoDisLente.getText());                        
@@ -511,9 +526,13 @@ public class Ventana extends JFrame {
                                 
                
                // y obviamente aparece la imagen SI HAY ALGUNA LENTE
-               if( nLente != 0  ){
+               ecuacionFabricante();
+               
+               if( nLente != 0 ){
                    
-                    topPanel.add(imagen); // falta en la posicion correcta
+                    ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
+                    ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
+                    topPanel.add(ImagenInverso);
                }
                
               // topPanel.repaint(); 
@@ -533,7 +552,7 @@ public class Ventana extends JFrame {
     
     public void paint(Graphics g){
         
-        int A,O,F,Y,P; // Para calcular geometricamente rayo del foco al lente 
+         // Para calcular geometricamente rayo del foco al lente 
                     // O*B/A = Y -> siendo Y la posicion en el eje y del lente donde cae el rayo.
         super.paint(g);  //para superponer y no generar conflicto con JButton
    //    g.drawLine(0, getHeight()/2-30, getWidth(), getHeight()/2-30); // seguimiento con ventana
@@ -555,12 +574,7 @@ public class Ventana extends JFrame {
             // 60 para corregir los limites no buenos que da arrayLentes[0].getX();
              // se encuentra p (imagen en X)
            //calculo:
-            A = (arrayLentes[0].getX()+20 - (int)arrayFocos[0]*5) - (Objeto.getX()+13); //A
-            F = (int)arrayFocos[0]*5; //F oco
-            O = 250-Objeto.getY(); // O bjeto altura
-            Y = O*F/A;
-            P = arrayLentes[0].getX()+20-(Objeto.getX()+13);
-            encontrarImagen(F,P); // Xtemp listo para usar
+            
             g2.drawLine(arrayLentes[0].getX()+20 +(int)arrayFocos[0]*5, 280, arrayLentes[0].getX()+20+(int)Xtemp, 280+Y );
             
             g2.setColor(GREEN);
@@ -585,7 +599,16 @@ public class Ventana extends JFrame {
         }
          
     }
-
+    
+    private void ecuacionFabricante(){
+        A = (arrayLentes[0].getX()+20 - (int)arrayFocos[0]*5) - (Objeto.getX()+13); //A
+        F = (int)arrayFocos[0]*5; //F oco
+        O = 250-Objeto.getY(); // O bjeto altura
+        Y = O*F/A;
+        P = arrayLentes[0].getX()+20-(Objeto.getX()+13);
+        encontrarImagen(F,P); // Xtemp listo para usar
+    }
+    
     private void encontrarImagen(int foco,int pp){ //modo simple (p y q tal como estan falta cuando p o q tan de otros laos)?
         
         Xtemp = 1/(1/(float)foco-1/(float)pp); 

@@ -130,14 +130,18 @@ public class Ventana extends JFrame {
        // imagen = new JLabel(new ImageIcon("imagen.png"));
         imgImagenInverso = new ImageIcon("imagenInverso.png");
         ImagenInverso = new JLabel();
-         //COMENZAR AQUI:
-         // ESCALAR EL TAMAÑO EN BASE A LA ECUACION DEL FABRICANTTE CUIDADO QUE ESTE ANTES DE LOS CALCULOS
-         // DEFINIR CUANDO SE HARAN ESOS CALCULOS : PRIMERO CALCULO LUEGO PONGO OBJETO LUEGO PINTO RAYOS
-        //FALTA PONER ESTO CUANDO RECIEN EXISTA UN OBJETO Y UN ESPEJO (DEBE ESTAR POR
-        //DONDE SE AGREGA LA IMAGEN AL PANEL, LUEGO IGUAL Q OBJETO Y OBJETO INVERSO
-        
+        //COMENZAR AQUI:
+        //ARREGLAR LENTES CONVERGENTE Y DIVERGENTE EN PHOTOSHOP CON TAMAÑO PRUDENCIAL
+        //ARREGLAR LOS CASOS SEGUN :
+        //LENTE CONVERGENTE.-
+        //                  OBJETO INVERSO CUANDO MAS LEJOS DEL FOCO Y CASO CONTRARIO OBJETO NORMAL
+        //                  ESTO SE PUEDE CORREGIR CON EL SIGNO PARA GENERALIZARLO Y NO HACER 2 CASOS
+        //LENTE DIVERGENTE.-
+        //                  SIEMPRE OBJETO PARADO (AUMENTO M ES +)
         // Y Q LOS PARAMETROS SEAN GLOBALES 
         // PARA GENERALIZAR EN PAINT(GRAPHICS G) PODEMOS HACER FUNCIONES PARA GENERALIZAR LOS ESPEJOS
+        // FALTA GENERALIZAR PARA CUANDO USEMOS DOS ESPEJOS BORREMOS EL PRIMERO Y AGREGAMOS OBJETO
+        // Y CUANDO BORREMOS UN ESPEJO SE ACTUALIZE EL SIGUIENTE BIEN FALTA ESO.
     
         
         //AQUII
@@ -444,13 +448,7 @@ public class Ventana extends JFrame {
                         arrayLentes[nLente] = new JLabel(new ImageIcon("lentec.jpg"));
                         arrayLentes[nLente].addMouseListener(oyenteMouseLente);
                         
-                       if( Objeto.getParent() == topPanel ){
-                           ecuacionFabricante();
-                           System.out.println("ok");
-                           ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
-                           ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
-                           topPanel.add(ImagenInverso);
-                       }
+                       
                        if( textoDisLente.isEnabled() == true ){
                            lentePosDx = Integer.parseInt(textoDisLente.getText());                        
                            lentePosDx = lentePosDx*5;               
@@ -463,6 +461,16 @@ public class Ventana extends JFrame {
                        lentePosDx = lentePosDx+100;
                        topPanel.revalidate();
                        repaint(); 
+                       
+                       //luego de poner el lente graficamos la imagen
+                       if( Objeto.getParent() == topPanel ){
+                           ecuacionFabricante();
+                           System.out.println("xTemp: "+Xtemp); 
+                           ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
+                           ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
+                           topPanel.add(ImagenInverso);
+                       }
+                       
                     }
                     
                     textoFoco.setText("");
@@ -526,10 +534,10 @@ public class Ventana extends JFrame {
                                 
                
                // y obviamente aparece la imagen SI HAY ALGUNA LENTE
-               ecuacionFabricante();
+               
                
                if( nLente != 0 ){
-                   
+                    ecuacionFabricante();
                     ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
                     ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
                     topPanel.add(ImagenInverso);

@@ -162,6 +162,7 @@ public class Ventana extends JFrame {
                 topPanel.remove(Objeto);        // no problem si no existe no aplica
                 topPanel.remove(ObjetoInverso); // no problem si noexiste no aplica
                 topPanel.remove(ImagenInverso);
+                ecuacionFabricante();
                 addObject.setEnabled(true); 
                
                 topPanel.revalidate();  
@@ -348,6 +349,10 @@ public class Ventana extends JFrame {
                 }else {
                     posAcumuladoX = arrayLentes[nLente-1].getX();
                     objetoPosX = arrayLentes[0].getX()-Objeto.getX(); // se actualiza para el primer lente
+                    ecuacionFabricante(); //corregimos la nueva ecuacion de fabricante pq hay nueva lente
+                    ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
+                    ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
+                    topPanel.add(ImagenInverso);
                 }
                 /*
                 siguiente linea error mio no funciona correctamente

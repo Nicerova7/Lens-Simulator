@@ -145,12 +145,12 @@ public class Ventana extends JFrame {
     
         
         //AQUII
-        lented = new JLabel(new ImageIcon("lented.jpg"));
+      //  lented = new JLabel(new ImageIcon("lented.jpg"));
       //  lented.setBounds((int)(lentePosIni+lentePosDx),180,25,142);
       //  System.out.println("va: " + lentePosIni+lentePosDx);
         
         
-        lentec = new JLabel(new ImageIcon("lentec.jpg"));
+       // lentec = new JLabel(new ImageIcon("lentec1.png"));
       //  lentec.setBounds((int)(lentePosIni+lentePosDx),180,25,142);   
        
            
@@ -427,7 +427,7 @@ public class Ventana extends JFrame {
                     
                     arrayFocos[nLente] = Float.parseFloat(textoFoco.getText());
                     if( Float.parseFloat(textoFoco.getText()) < 0 ){ //caso lente divergente
-                        arrayLentes[nLente] = new JLabel(new ImageIcon("lented.jpg"));
+                        arrayLentes[nLente] = new JLabel(new ImageIcon("lented.png"));
                         arrayLentes[nLente].addMouseListener(oyenteMouseLente);
                         
                        if( Objeto.getParent() == topPanel ){
@@ -442,7 +442,7 @@ public class Ventana extends JFrame {
                            lentePosDx = lentePosDx*5;               
                        }
 
-                       arrayLentes[nLente].setBounds((int)(posAcumuladoX+lentePosDx),180,25,142); //Nueva posicion
+                       arrayLentes[nLente].setBounds((int)(posAcumuladoX+lentePosDx),90,25,325); //Nueva posicion
                        posAcumuladoX = posAcumuladoX + lentePosDx;
                        topPanel.add(arrayLentes[nLente]);
                        nLente = nLente + 1;          
@@ -450,7 +450,7 @@ public class Ventana extends JFrame {
                        repaint();
                        
                     }else{ //caso lente convergente
-                        arrayLentes[nLente] = new JLabel(new ImageIcon("lentec.jpg"));
+                        arrayLentes[nLente] = new JLabel(new ImageIcon("lentec.png"));
                         arrayLentes[nLente].addMouseListener(oyenteMouseLente);
                         
                        
@@ -459,7 +459,7 @@ public class Ventana extends JFrame {
                            lentePosDx = lentePosDx*5;               
                        }
 
-                       arrayLentes[nLente].setBounds((int)(posAcumuladoX+lentePosDx),180,25,142); //Nueva posicion
+                       arrayLentes[nLente].setBounds((int)(posAcumuladoX+lentePosDx),90,25,325); //Nueva posicion
                        posAcumuladoX = posAcumuladoX + lentePosDx;
                        topPanel.add(arrayLentes[nLente]);
                        nLente = nLente + 1;

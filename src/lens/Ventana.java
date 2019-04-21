@@ -38,29 +38,32 @@ public class Ventana extends JFrame {
     private JPanel botPanel;
     private JPanel topPanel;
     
+    // Componentes en pantalla.
     private JTextField textoFoco;
     private JTextField textoDisLente;
     private JTextField textoObjeto;
     private JTextField alturaObjeto;
+    private JButton addObject;
+    private JButton addLente;
     
-    private JLabel Objeto;
-    private JLabel ObjetoInverso;
-    private JLabel ImagenInverso;
-    private JLabel lented;
-    private JLabel lentec;
-    private JLabel imagen;
-    private JLabel[] arrayLentes = new JLabel[23];
-    
+    // Para cargar imagen a ser escalada
     private ImageIcon imgObjeto;
     private ImageIcon imgObjetoInverso;
     private ImageIcon imgImagenInverso;
     
+    // Para el escalado
+    private JLabel Objeto;
+    private JLabel ObjetoInverso;
+    private JLabel ImagenInverso;
+    private JLabel imagen;
+    private JLabel[] arrayLentes = new JLabel[23];
+
+    // Variables para controlar lentes.
     private int nLente = 0;  // indica cuantos lentes hay. (n-1 seria la posicion)
-    private int lentei = 0;
+    private int lentei = 0;  // usado para identificar lente que estamos interactuando.
     
-    private JButton addObject;
-    private JButton addLente;
-    
+
+    // Menu para eliminar objeto y lente con pop y pop2 respectivamente
     private JPopupMenu popup;
     private JPopupMenu popup2;
     
@@ -77,10 +80,11 @@ public class Ventana extends JFrame {
     
     private int localObjetoY;
     
-    int A,O,F,Y,P; //para la ecuacion de fabricante
+    //para la ecuacion de fabricante
+    int A,O,F,Y,P; 
     
     //RGB Colors
-    public static final Color PURPLE = new Color(128,0,128);
+    public static final Color PURPLE = new Color(137,18,196);
     public static final Color GREEN = new Color(102,204,0);
     public static final Color ORANGE = new Color(255,128,0);
   
@@ -124,14 +128,12 @@ public class Ventana extends JFrame {
         imgObjetoInverso = new ImageIcon("objetoInverso.png");
         ObjetoInverso = new JLabel();
         
-       // Objeto = new JLabel(new ImageIcon("objeto.png"));
-        //topPanel.add(Objeto);
-        
        // imagen = new JLabel(new ImageIcon("imagen.png"));
         imgImagenInverso = new ImageIcon("imagenInverso.png");
         ImagenInverso = new JLabel();
         //COMENZAR AQUI:
-        //ARREGLAR LENTES CONVERGENTE Y DIVERGENTE EN PHOTOSHOP CON TAMAÑO PRUDENCIAL
+        //ARREGLAR A USAR LA VARIABLE objetoPosX para no ver tan grande el codigo y talvez
+        //                                      generalizar aunque eso es con lentes al parecer.
         //ARREGLAR LOS CASOS SEGUN :
         //LENTE CONVERGENTE.-
         //                  OBJETO INVERSO CUANDO MAS LEJOS DEL FOCO Y CASO CONTRARIO OBJETO NORMAL
@@ -142,17 +144,7 @@ public class Ventana extends JFrame {
         // PARA GENERALIZAR EN PAINT(GRAPHICS G) PODEMOS HACER FUNCIONES PARA GENERALIZAR LOS ESPEJOS
         // FALTA GENERALIZAR PARA CUANDO USEMOS DOS ESPEJOS BORREMOS EL PRIMERO Y AGREGAMOS OBJETO
         // Y CUANDO BORREMOS UN ESPEJO SE ACTUALIZE EL SIGUIENTE BIEN FALTA ESO.
-    
-        
-        //AQUII
-      //  lented = new JLabel(new ImageIcon("lented.jpg"));
-      //  lented.setBounds((int)(lentePosIni+lentePosDx),180,25,142);
-      //  System.out.println("va: " + lentePosIni+lentePosDx);
-        
-        
-       // lentec = new JLabel(new ImageIcon("lentec1.png"));
-      //  lentec.setBounds((int)(lentePosIni+lentePosDx),180,25,142);   
-       
+
            
         //JPopMenu
         popup = new JPopupMenu();
@@ -162,7 +154,7 @@ public class Ventana extends JFrame {
                 topPanel.remove(Objeto);        // no problem si no existe no aplica
                 topPanel.remove(ObjetoInverso); // no problem si noexiste no aplica
                 topPanel.remove(ImagenInverso);
-                ecuacionFabricante();
+                if( nLente != 0) ecuacionFabricante();
                 addObject.setEnabled(true); 
                
                 topPanel.revalidate();  
@@ -251,7 +243,7 @@ public class Ventana extends JFrame {
         botPanel.setBorder(BorderFactory.createLineBorder(Color.blue));
         //topPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.BLACK,Color.BLACK));      
         
-   
+
         
         
         mainPanel.add(topPanel);
@@ -333,7 +325,7 @@ public class Ventana extends JFrame {
     private void iniciarButtons(){
         
         
-        
+        // Accion eliminando lente en cuestion
         popup2 = new JPopupMenu();
         ActionListener menuListener2 = new ActionListener() {
             @Override
@@ -341,26 +333,23 @@ public class Ventana extends JFrame {
                 topPanel.remove(arrayLentes[lentei]); // Solo se quita de pantalla
                 reducirLente(); // quitarlo del array
                 
-                if(nLente == 0){
+                if(nLente == 0){ // Caso eliminamos y no queda lentes
                     textoDisLente.setEnabled(false);
-                    topPanel.remove(ImagenInverso);
+                    topPanel.remove(ImagenInverso); // remove imagen ya que no hay lentes
+                    // reiniciamos posicion por default con las dos variables a usar
                     lentePosDx = 0;
                     posAcumuladoX = lentePosIni;
-                }else {
-                    posAcumuladoX = arrayLentes[nLente-1].getX();
-                    objetoPosX = arrayLentes[0].getX()-Objeto.getX(); // se actualiza para el primer lente
+                    
+                }else {  //Caso eliminamos y queda lentes todavia
+                    posAcumuladoX = arrayLentes[nLente-1].getX(); // actualizamos posicion acumulada
+                    // Esto asegura que siempre se agregara objeto al primer lente sea cual sea pero aun no se usa objetoPosX.
+                  //  objetoPosX = arrayLentes[0].getX()-Objeto.getX(); // se actualiza para el primer lente
                     ecuacionFabricante(); //corregimos la nueva ecuacion de fabricante pq hay nueva lente
+                    //Actualizamos imagen 
                     ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
                     ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
                     topPanel.add(ImagenInverso);
                 }
-                /*
-                siguiente linea error mio no funciona correctamente
-                if(nLente == 0) {
-                    textoDisLente.setEnabled(false);
-                    lentePosDx = 0;
-                    posAcumuladoX = lentePosIni;
-                }*/
 
                 topPanel.revalidate();  
                 repaint();
@@ -368,10 +357,12 @@ public class Ventana extends JFrame {
             }
         };
         
+        // Menu mensaje al dar right click al lente
         JMenuItem item;
         popup2.add(item = new JMenuItem("Eliminar"));
-        item.addActionListener(menuListener2);
-                 
+        item.addActionListener(menuListener2); //al dar click a item se activa action
+        
+        // Capturando accion del lente
         MouseListener oyenteMouseLente = new MouseListener(){
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -400,10 +391,8 @@ public class Ventana extends JFrame {
             
             private void checkPopup(MouseEvent e) {
                 if (e.isPopupTrigger()){                
-                    lentei = Comparar(e.getSource());
-                    //siguiente linea un error mio. no funciona correctamente
-                //    if(lentei == nLente-1) posAcumuladoX = posAcumuladoX - lentePosDx; //Solo si es el ultimo
-                    popup2.show(arrayLentes[lentei], topPanel.getX(), topPanel.getY());
+                    lentei = Comparar(e.getSource()); // Verifica que lente estamos tocando
+                    popup2.show(arrayLentes[lentei], topPanel.getX(), topPanel.getY()); //Aparece mensaje en ese lente
                 }
                 topPanel.revalidate();
                 repaint(); // para no despintar linea negra de graphics
@@ -412,48 +401,54 @@ public class Ventana extends JFrame {
         
       //  Objeto.addMouseListener(oyenteMouseLente);
         
-        //Add Lente
+        //Add Lente button
         addLente = new JButton();
         addLente.setBounds(650,20,110,20);
-        addLente.setText("Add Lente"); // SE AGREGA ATRAS DEL ULTIMO AGREGADO
+        addLente.setText("Add Lente"); // Se agrega cada lente a la derecha del ultimo agregado
         
         ActionListener oyenteLente = new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 
+                // Abarca dos casos: ingresa si es el primero ya que textoDisLente esta desactivado
+                // y entra si tenemos llenos los dos campos foco y distancia para los demas casos.
                 if( (textoFoco.getText().matches("-?\\d+(\\.\\d+)?") && !textoDisLente.isEnabled()) 
                         || (textoFoco.getText().matches("-?\\d+(\\.\\d+)?") && textoDisLente.getText().matches("-?\\d+(\\.\\d+)?"))  ){ 
                     
                     
                     arrayFocos[nLente] = Float.parseFloat(textoFoco.getText());
-                    if( Float.parseFloat(textoFoco.getText()) < 0 ){ //caso lente divergente
+                    
+                    // Caso lente divergente
+                    if( Float.parseFloat(textoFoco.getText()) < 0 ){ 
                         arrayLentes[nLente] = new JLabel(new ImageIcon("lented.png"));
-                        arrayLentes[nLente].addMouseListener(oyenteMouseLente);
-                        
-                       if( Objeto.getParent() == topPanel ){
-                         //  imagen.setBounds(550,250,25,80);
-                           ecuacionFabricante();
-                           ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
-                           ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
-                           topPanel.add(ImagenInverso);
-                       }
-                       if( textoDisLente.isEnabled() == true ){ // si ya hay uno se puede capturar distancia 
+                        arrayLentes[nLente].addMouseListener(oyenteMouseLente); // Habilitamos opcion a eliminar
+                               
+                       // Caso hay lente anterior agregamos a la derecha respecto a la distancia ingresada
+                       if( textoDisLente.isEnabled() == true ){  
                            lentePosDx = Integer.parseInt(textoDisLente.getText());                        
-                           lentePosDx = lentePosDx*5;               
+                           lentePosDx = lentePosDx*5; // Escalado de 5 para graficar bien              
                        }
 
                        arrayLentes[nLente].setBounds((int)(posAcumuladoX+lentePosDx),90,25,325); //Nueva posicion
-                       posAcumuladoX = posAcumuladoX + lentePosDx;
+                       posAcumuladoX = posAcumuladoX + lentePosDx; // Actualizamos acumulado para siguiente lente si es q hubiese
                        topPanel.add(arrayLentes[nLente]);
                        nLente = nLente + 1;          
                        topPanel.revalidate();
                        repaint();
                        
-                    }else{ //caso lente convergente
+                       // Luego de poner el lente si hay objeto entonces agregamos Imagen
+                       if( Objeto.getParent() == topPanel ){ 
+                           ecuacionFabricante();
+                           ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
+                           ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
+                           topPanel.add(ImagenInverso);
+                       }
+                       
+                    }else{ // Caso lente convergente
+                        
                         arrayLentes[nLente] = new JLabel(new ImageIcon("lentec.png"));
                         arrayLentes[nLente].addMouseListener(oyenteMouseLente);
-                        
-                       
+                           
                        if( textoDisLente.isEnabled() == true ){
                            lentePosDx = Integer.parseInt(textoDisLente.getText());                        
                            lentePosDx = lentePosDx*5;               
@@ -467,14 +462,13 @@ public class Ventana extends JFrame {
                        topPanel.revalidate();
                        repaint(); 
                        
-                       //luego de poner el lente graficamos la imagen
+                       // Luego de poner el lente si hay objeto graficamos la imagen
                        if( Objeto.getParent() == topPanel ){
                            ecuacionFabricante();
-                           System.out.println("xTemp: "+Xtemp); 
                            ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
                            ImagenInverso.setIcon(new ImageIcon(imgImagenInverso.getImage().getScaledInstance(10, Y, Image.SCALE_SMOOTH)));
                            topPanel.add(ImagenInverso);
-                       }
+                       } 
                        
                     }
                     
@@ -490,18 +484,17 @@ public class Ventana extends JFrame {
         addLente.addActionListener(oyenteLente);
         botPanel.add(addLente);
         
-        //Add  Objeto
+        //Add  Objetob button
         addObject = new JButton();
         addObject.setBounds(650,50,110,20);
-        addObject.setText("Add Objeto");
-        
-        
-        
+        addObject.setText("Add Objeto"); // Se agrega a la izquierda del primer lente, esté donde esté
+
         ActionListener oyenteObjeto = new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                //topPanel.remove(Objeto);
-               // al agregar el objeto lo ponemos
+               // 
+               // Agregando objeto 
                if(textoObjeto.getText().matches("-?\\d+(\\.\\d+)?") && alturaObjeto.getText().matches("-?\\d+(\\.\\d+)?")){
                    
                    objetoPosY = Integer.parseInt(alturaObjeto.getText())*6;
@@ -509,20 +502,19 @@ public class Ventana extends JFrame {
                    
                    if(nLente > 0){ // si hay lentes referenciamos al lente y le agregamos en base al primero
                        
-                       //=========== FALTA PAINT PARA IMG INVERSO ==========
                        // 250 - objetoPosY (con 250 te posicionas en el centro luego corres lo que mide el objeto y listo ubicado en linea
-                       if(localObjetoY < 0){
+                       if(localObjetoY < 0){ // Caso objeto invertido
                         localObjetoY = -localObjetoY; // para graficar sin errores (segunda parte de bounds es el margen q contiene la imagen)
                         ObjetoInverso.setBounds(arrayLentes[0].getX()-(int)Float.parseFloat(textoObjeto.getText())*5,250, 10 ,localObjetoY);
                         ObjetoInverso.setIcon(new ImageIcon(imgObjetoInverso.getImage().getScaledInstance(10, localObjetoY, Image.SCALE_SMOOTH)));
                         topPanel.add(ObjetoInverso);
-                       }else{
+                       }else{ // Caso objeto derecho
                        Objeto.setBounds(arrayLentes[0].getX()+7-(int)Float.parseFloat(textoObjeto.getText())*5,250-localObjetoY, 10 ,localObjetoY);
                        Objeto.setIcon(new ImageIcon(imgObjeto.getImage().getScaledInstance(10, localObjetoY, Image.SCALE_SMOOTH)));
                        topPanel.add(Objeto);
                        }
                    }
-                   else{ // si no hay lentes agregamos en un lugar definido previamente (lentePosIni
+                   else{ // si no hay lentes agregamos en un lugar definido previamente (lentePosIni)
                        if(localObjetoY < 0){
                         localObjetoY = -localObjetoY; // para graficas sin errores
                         ObjetoInverso.setBounds((int)lentePosIni+7-(int)Float.parseFloat(textoObjeto.getText())*5,250, 10, localObjetoY);
@@ -535,12 +527,8 @@ public class Ventana extends JFrame {
                        }
                    }
                    
-                   objetoPosX = lentePosIni-Objeto.getX(); // p al primer lente
-                                
-               
-               // y obviamente aparece la imagen SI HAY ALGUNA LENTE
-               
-               
+                   
+               // Caso primero se agrego lente(s) y luego Objeto
                if( nLente != 0 ){
                     ecuacionFabricante();
                     ImagenInverso.setBounds(arrayLentes[0].getX()+10+(int)Xtemp,250, 10 ,Y);
@@ -624,7 +612,7 @@ public class Ventana extends JFrame {
     
     private void encontrarImagen(int foco,int pp){ //modo simple (p y q tal como estan falta cuando p o q tan de otros laos)?
         
-        Xtemp = 1/(1/(float)foco-1/(float)pp); 
+        Xtemp = 1/(1/(float)foco-1/(float)pp);  // 1/p + 1/q = 1/f
     }
 }
 

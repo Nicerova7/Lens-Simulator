@@ -131,11 +131,12 @@ public class Ventana extends JFrame {
         
         imgImagen = new ImageIcon("imagen.png");
         imagen = new JLabel();
-       // imagen = new JLabel(new ImageIcon("imagen.png"));
+        
         imgImagenInverso = new ImageIcon("imagenInverso.png");
         ImagenInverso = new JLabel();
-        //COMENZAR AQUI:
-        //ESCALADO CORRECTO DE IMAGEN CASO CUANDO CON LENTE CONVERG OBJETO ESTA ENTRE F Y CENTRO 
+        // COMENZAR AQUI:
+        // ESCALADO CORRECTO DE IMAGEN CASO CUANDO CON LENTE CONVERG OBJETO ESTA ENTRE F Y CENTRO 
+        // FALTA ARREGLAR CASI DIVERGENTE MAL PARAMETROS DIVISION ENTRE 0
         // ARREGLAR LOS CASOS SEGUN :
         // LENTE CONVERGENTE.-
         //                  OBJETO INVERSO CUANDO MAS LEJOS DEL FOCO Y CASO CONTRARIO OBJETO NORMAL

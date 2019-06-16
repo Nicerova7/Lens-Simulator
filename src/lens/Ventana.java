@@ -351,6 +351,9 @@ public class Ventana extends JFrame {
                     lentePosDx = 0;
                     posAcumuladoX = lentePosIni;
                     
+                    // Aqui tenemos que notar que si eliminamos y queda lentes pero
+                    // q haya un objeto el cual hacer la ecuacion de fabricante 
+                    
                 }else {  //Caso eliminamos y queda lentes todavia
                     posAcumuladoX = arrayLentes[nLente-1].getX(); // actualizamos posicion acumulada
                     // Esto asegura que siempre se agregara objeto al primer lente sea cual sea pero aun no se usa objetoPosX.

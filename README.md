@@ -4,10 +4,10 @@
 
 Case of a converging lens.
 
-![](lens_total.PNG)
+![](https://raw.githubusercontent.com/Nicerova7/Lens-Simulator/master/imgs/lens_total.PNG)
 
 ### Functions
 
 Delete funcion for the converging lens.
 
-![](lens.jpg)
+![](https://raw.githubusercontent.com/Nicerova7/Lens-Simulator/master/imgs/lens.jpg)
